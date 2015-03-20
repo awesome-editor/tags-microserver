@@ -3,7 +3,8 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'You don\'t belong anywhere' });
+    
+  res.send('You don\'t belong anywhere');
 });
 
 module.exports = router;
