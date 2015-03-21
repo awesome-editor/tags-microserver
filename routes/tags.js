@@ -55,7 +55,8 @@ function tags(db) {
 
             createNode = function(node) {
  
-
+                console.log(node);
+                var q = db.createNode(node).future.save();
 
                 return q.wait();
             },
