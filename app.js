@@ -9,9 +9,7 @@ var index = require('./routes/index');
 var users = require('./routes/users');
 var documents = require('./routes/documents');
 
-var mongo = require('mongodb');
-var monk = require('monk');
-var db = monk('localhost/documents');
+var config = require('./config.json');
 
 var app = express();
 
@@ -21,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 
 app.use('/', index);
-app.use('/documents', documents(db));
+app.use('/documents', documents);
 
 
 // catch 404 and forward to error handler
@@ -52,5 +50,6 @@ app.use(function(err, req, res, next) {
   res.send(err.message);
 });
 
+process.env.PORT = config.port;
 
 module.exports = app;

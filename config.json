@@ -1,0 +1,6 @@
+{
+    "host": "localhost",
+    "dbname": "documents",
+    "port": 3000,
+    "tagServer": "http://localhost:3001"
+}
