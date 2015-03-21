@@ -1,3 +1,4 @@
+//express stuff
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -5,21 +6,20 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
-var documents = require('./routes/documents');
-
+var tags = require('./routes/tags');
 var config = require('./config.json');
 
-var app = express();
 
+var neo4j = require('neo4j')
+var db = new neo4j.GraphDatabase(config.tags.db)
+
+var app = express();
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 
-app.use('/', index);
-app.use('/documents', documents);
+app.use('/tags', tags(db));
 
 
 // catch 404 and forward to error handler

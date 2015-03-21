@@ -1,6 +1,8 @@
 {
-    "host": "localhost",
-    "dbname": "documents",
-    "port": 3000,
-    "tagServer": "http://localhost:3001"
+    "tags": {
+        "host": "localhost",
+        "port": 3001,
+        "db": "http://localhost:7474",
+        "dbname": "tags"
+    }
 }
