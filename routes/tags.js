@@ -1,8 +1,10 @@
 var _ = require('highland');
+var fibrous = require('fibrous');
+
 var express = require('express');
 
 
-var noop = function() {}
+var noop = function() {};
 
 
 function tags(db) {
@@ -41,7 +43,8 @@ function tags(db) {
      */
     function create(req, res, next) {
 
-        var tags = req.body,
+
+            var path = req.body,
 
             getNewNodes = function(total, cur) {
 
@@ -50,69 +53,63 @@ function tags(db) {
                 return total;
             },
 
-            createNodes = function(node) {
-
-                return db.createNode(node);
+            createNode = function(node) {
+ 
+                return db.createNode(node).save();
             },
 
-            saveNodes = function(node) {
+            newNodes = [];
 
-                return node.save();
-            },
 
-            newNodes = _(tags).reduce([], getNewNodes);
+        for(var p in path) {
+            
+            newNodes.push(createNode(path[p]));
+        }
 
-        newNodes.map(createNodes).map(saveNodes)
+        res.status(201).send(newNodes);
+
+    //});
     }
 
-    this.validatePath = function(req, res, next) {
+    /**
+     * This is a really ugly son of a gun.
+     * (1st attempt at highland)
+     */
+    function validatePath(req, res, next) {
 
         if (Object.prototype.toString.call( req.body ) !== '[object Array]') {
 
-            res.status(400).json('Must be an array of arrays');
+            throw('Must be an array');
         }
 
-        var tags = req.body,
+        var path = req.body,
 
-            validator = function(path) {
+            lastIndexExistingNode = -1,
+            firstIndexNewNode = path.length - 1;
 
-                if (Object.prototype.toString.call( path ) !== '[object Array]') {
+        for(var i=path.length-1; i>=0; i--) {
 
-                    res.status(400).json('Must be an array of arrays');
-                }
+            if (path[i].hasOwnProperty('id')) {
 
-                var lastIndexExistingNode = -1,
-                    firstIndexNewNode = path.length - 1;
+                lastIndexExistingNode = i;
+                break;
+            }
+        }
 
-                for(var i=path.length-1; i>=0; i--) {
+        for(var j=0; j<path.length; j++) {
 
-                    if (path[i].hasOwnProperty('id')) {
+            if (!path[j].hasOwnProperty('id')) {
 
-                        lastIndexExistingNode = i;
-                        break;
-                    }
-                }
+                firstIndexNewNode = j;
+                break;
+            }
+        }
 
-                for(var j=0; j<path.length; j++) {
+        if (firstIndexNewNode<lastIndexExistingNode) {
+            throw "Tried to create an impossible path";
+        }
 
-                    if (!path[j].hasOwnProperty('id')) {
-
-                        firstIndexNewNode = j;
-                        break;
-                    }
-                }
-
-                if (firstIndexNewNode<lastIndexExistingNode) throw "Tried to create an impossible path"
-            },
-
-            result = _(tags)
-                .map(validator)
-                .stopOnError(function(err) {
-
-                    res.status(400).json(err)
-                });
-
-        result.each(noop); //call validator
+        next();
     }
 
 
@@ -125,12 +122,9 @@ function tags(db) {
     //TODO use UUIDs
 
 
-    router.get('/', function(req, res, next) {
+    router.get('/', function(req, res) {
 
-        documents.find({},{},function(e,docs) {
-
-            res.json(docs);
-        });
+        res.status(200).send('hello');
     });
 
     router.get('/:id', function(req, res, next) {
@@ -145,16 +139,7 @@ function tags(db) {
         });
     });
 
-    router.post('/', function(req, res, next) {
-
-        var document = req.body;
-
-        documents.insert(document, function(err, doc) {
-
-            if (err) res.status(500).json(err);
-            else if (doc) res.status(201).json(doc);
-        });
-    });
+    router.post('/', validatePath, create);
 
     router.put('/:id', function(req, res, next) {
 
@@ -177,6 +162,7 @@ function tags(db) {
     });
 
 
+    this._validatePath = validatePath;
     this.router = router;
 }
 
