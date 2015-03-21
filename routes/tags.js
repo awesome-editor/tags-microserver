@@ -55,18 +55,19 @@ function tags(db) {
 
             createNode = function(node) {
  
-                return db.createNode(node).save();
+
+
+                return q.wait();
             },
 
-            newNodes = [];
+            newNodes = [],
+            nodesToCreate = _(path).reduce([], getNewNodes);
 
 
-        for(var p in path) {
+        nodesToCreate.sequence().each(function(node) {
             
-            var q = db.createNode(path[p]).future.save();
-
-            newNodes.push(q.wait());
-        }
+            newNodes.push(createNode(node));
+        });
 
         res.status(201).send(newNodes);
 
