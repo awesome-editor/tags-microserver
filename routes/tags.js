@@ -63,7 +63,9 @@ function tags(db) {
 
         for(var p in path) {
             
-            newNodes.push(createNode(path[p]));
+            var q = db.createNode(path[p]).future.save();
+
+            newNodes.push(q.wait());
         }
 
         res.status(201).send(newNodes);
