@@ -6,19 +6,18 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var Tags = require('./routes/tags');
+var Tags = require('./routes/tag-routes');
 var config = require('./config.json');
 
 
 var neo4j = require('neo4j');
 var db = new neo4j.GraphDatabase(config.tags.db);
 
-var fibrous = require('fibrous');
+
 var app = express();
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-app.use(fibrous.middleware);
 
 app.use('/tags', new Tags(db).router);
 

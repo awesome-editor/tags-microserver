@@ -1,10 +1,7 @@
 var _ = require('highland');
 
-var express = require('express');
 
-
-var noop = function() {};
-
+function noop() {}
 
 function isArray(obj) {
 
@@ -12,7 +9,9 @@ function isArray(obj) {
 }
 
 
-function tags(db) {
+function Methods(db) {
+
+   this.create = create;
 
 
     /**
@@ -157,106 +156,7 @@ function tags(db) {
                 res.status(201).send(newNodes);
             });
     }
-
-    function validatePath(req, res, next) {
-
-        if (Object.prototype.toString.call( req.body ) !== '[object Array]') {
-
-            throw('Must be an array');
-        }
-
-        var path = req.body,
-
-            lastIndexExistingNode = -1,
-            firstIndexNewNode = path.length - 1;
-
-        for(var i=path.length-1; i>=0; i--) {
-
-            if (path[i].hasOwnProperty('id')) {
-
-                lastIndexExistingNode = i;
-                break;
-            }
-        }
-
-        for(var j=0; j<path.length; j++) {
-
-            if (!path[j].hasOwnProperty('id')) {
-
-                firstIndexNewNode = j;
-                break;
-            }
-        }
-
-        if (firstIndexNewNode<lastIndexExistingNode) {
-            throw "Tried to create an impossible path";
-        }
-
-        next();
-    }
-
-
-    function mv(data) {
-
-        var node = data.node,
-            from = data.from,
-            to = data.to;
-
-
-    }
-
-
-    var router = express.Router();
-
-
-    //http://expressjs.com/guide/routing.html
-    //http://www.vincent-durmont.com/2013/11/29/first-rest-api-with-node-express-monk-and-mongodb.html
-
-    //TODO use UUIDs
-
-
-    router.get('/', function(req, res) {
-
-        res.status(200).send('hello');
-    });
-
-    router.get('/:id', function(req, res, next) {
-
-        var id = req.params.id;
-
-        documents.findById(id, function(err, doc) {
-        
-            if (err) res.status(500).json(err);
-            else if (doc) res.json(doc);
-            else res.status(404);
-        });
-    });
-
-    router.post('/', validatePath, create);
-
-    router.put('/:id', function(req, res, next) {
-
-        var id = req.params.id;
-
-        var body = req.body;
-        delete body._id;
-
-        documents.findAndModify(
-            {_id: id}, 
-            {$set: body},
-            {multi:false}, 
-            
-            function(err, doc){
-
-                if (err) res.status(500).json(err);
-                else if (doc) res.json(doc);
-                else res.status(404);
-        });
-    });
-
-
-    this._validatePath = validatePath;
-    this.router = router;
 }
 
-module.exports = tags; 
+
+module.exports = Methods;

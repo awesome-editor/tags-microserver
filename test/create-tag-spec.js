@@ -1,4 +1,4 @@
-var Tags = require('../routes/tags')
+var validators = require('../routes/validators');
 
 
 var BAD_REQUEST = 400;
