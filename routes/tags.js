@@ -60,6 +60,14 @@ function tags(db) {
                 return node.save(callback);
             }),
 
+            format = function(node) {
+
+                var data = node._data.data;
+                data.id = node._data.metadata.id;
+
+                return  data;
+            };
+
             newNodes = [];
 
         _(path)
@@ -67,7 +75,7 @@ function tags(db) {
             .map(createNode)
             .map(saveNode)
             .sequence() //once they're done list them one by one and...
-            .map(function(node) { newNodes.push(node); })
+            .map(function(node) { newNodes.push(format(node)); })
             .stopOnError(function(err) {
 
                 res.status(500).json({ success: newNodes, error: err });
