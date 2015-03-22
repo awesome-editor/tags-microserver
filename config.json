@@ -2,7 +2,9 @@
     "tags": {
         "host": "localhost",
         "port": 3001,
-        "db": "http://localhost:7474",
+        "db": "localhost",
+        "dbPort": 7474,
+        "dbTransaction": "/db/data/transaction",
         "dbname": "tags"
     }
 }
