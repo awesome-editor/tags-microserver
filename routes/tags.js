@@ -1,5 +1,4 @@
 var _ = require('highland');
-var fibrous = require('fibrous');
 
 var express = require('express');
 
@@ -46,31 +45,47 @@ function tags(db) {
 
             var path = req.body,
 
-            getNewNodes = function(total, cur) {
+            getNewNodes = function(node) {
 
-                if (!cur.hasOwnProperty('id')) total.push(cur);
-
-                return total;
+                return !node.hasOwnProperty('id');
             },
 
             createNode = function(node) {
  
-                console.log(node);
-                var q = db.createNode(node).future.save();
-
-                return q.wait();
+                return db.createNode(node);
             },
 
-            newNodes = [],
-            nodesToCreate = _(path).reduce([], getNewNodes);
+            saveNode = function(node, callback) {
+
+                return node.save(callback);
+            },
+
+            newNodes = [];
+
+        _(path)
+            .filter(getNewNodes)
+            .map(createNode)
+            .map(_.wrapCallback(saveNode))
+            .sequence()
+            .map(function(node) {
+
+                newNodes.push(node);
+            })
+            .stopOnError(function(err) {
+
+                res.status(500).json({ success: newNodes, error: err });
+            })
+            .flatten()
+            .apply(function(nodes) {
+
+                res.status(201).send(newNodes);
+            });
 
 
-        nodesToCreate.sequence().each(function(node) {
+        // nodesToCreate.sequence().each(function(node) {
             
-            newNodes.push(createNode(node));
-        });
-
-        res.status(201).send(newNodes);
+        //     newNodes.push(createNode(node));
+        // });
 
     //});
     }
