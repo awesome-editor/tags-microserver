@@ -55,28 +55,24 @@ function tags(db) {
                 return db.createNode(node);
             },
 
-            saveNode = function(node, callback) {
+            saveNode = _.wrapCallback(function(node, callback) { 
 
                 return node.save(callback);
-            },
+            }),
 
             newNodes = [];
 
         _(path)
             .filter(getNewNodes)
             .map(createNode)
-            .map(_.wrapCallback(saveNode))
-            .sequence()
-            .map(function(node) {
-
-                newNodes.push(node);
-            })
+            .map(saveNode)
+            .sequence() //once they're done list them one by one and...
+            .map(function(node) { newNodes.push(node); })
             .stopOnError(function(err) {
 
                 res.status(500).json({ success: newNodes, error: err });
             })
-            .flatten()
-            .apply(function(nodes) {
+            .apply(function() {
 
                 res.status(201).send(newNodes);
             });
