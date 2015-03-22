@@ -44,33 +44,70 @@ describe("neo4j", function () {
 
         beforeEach(function() {
 
-            post = function(data, callback) {
+            post = {
+                post: function(data, callback) {
 
-                callback(null, data);
+                    callback(null, data);
+                }
             };
 
-            format = function(data) {
+            format = {
+                format: function(data) {
 
-                return _([data])
-                    .map(function(res) {
+                    return _([data])
+                        .map(function(res) {
 
-                        return res;
-                    });
+                            return res;
+                        });
+                }
             };
-
 
             var Neo4j = new Database(post, format);
 
             db = new Neo4j();
 
-            // spyOn(res, 'status').andCallFake(function() {
-
-            //     return json;
-            // });
+            spyOn(post, 'post');
+            spyOn(format, 'format');
         });
 
 
-        it("should create correct query", function() {
+        it("should call post", function() {
+
+            db.createPath(args([anyFilePath[0]]))
+                .apply(function(res) {
+
+                    expect(post.post).toHaveBeenCalled();
+                });
+        });
+
+
+        it("should call format", function() {
+
+            db.createPath(args([anyFilePath[0]]))
+                .apply(function(res) {
+
+                    expect(format.format).toHaveBeenCalled();
+                });
+        });
+
+
+        it("should create correct query for single node", function() {
+
+            var expected = { statements: [
+                    expectedQuery(root, anyFilePath[0]),
+                ]
+            };
+
+
+            db.createPath(args([anyFilePath[0]]))
+                .apply(function(res) {
+
+                    expect(res).toEqual(expected);
+                });
+        });
+
+
+        it("should create correct query for filepath", function() {
 
             var expected = { statements: [
                     expectedQuery(root, anyFilePath[0]),
@@ -80,6 +117,23 @@ describe("neo4j", function () {
 
 
             db.createPath(args(anyFilePath))
+                .apply(function(res) {
+
+                    expect(res).toEqual(expected);
+                });
+        });
+
+
+        it("should create correct query for filepath with root", function() {
+
+            var expected = { statements: [
+                    expectedQuery(root, anyFilePath[0]),
+                    expectedQuery(anyFilePath[0], anyFilePath[1])
+                ]
+            };
+
+
+            db.createPath(args(anyFilePath, root))
                 .apply(function(res) {
 
                     expect(res).toEqual(expected);
