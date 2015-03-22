@@ -116,7 +116,7 @@ function tags(db) {
 
             createRelationship = _.wrapCallback(function(rel, callback) {
 
-                return rel.parent.createRelationshipFrom(rel.child, callback);
+                return rel.parent.createRelationshipFrom(rel.child, 'IN', callback);
             }),
  
             format = function(node) {
@@ -193,6 +193,16 @@ function tags(db) {
         }
 
         next();
+    }
+
+
+    function mv(data) {
+
+        var node = data.node,
+            from = data.from,
+            to = data.to;
+
+
     }
 
 
