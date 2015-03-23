@@ -28,7 +28,7 @@ describe("ssa", function() {
                     k: 3,
                     sim: sim,
                     target: 0,
-                    neighbors: $.range(11)
+                    categories: $.range(11)
                 },
 
                 actual = ssa.findKNearestNeighbors(args);
@@ -59,9 +59,9 @@ describe("ssa", function() {
 
             var args = {
                     target: 0,
-                    threshold: 0,
+                    parameters: {threshold: 0},
                     nearestneighbors: [9],
-                    allneighbors: [8,9,10],
+                    categories: [8,9,10],
                     sim: sim,
                     SSA: function(x,y) {
 
@@ -110,9 +110,9 @@ describe("ssa", function() {
 
             var args = {
                     target: 0,
-                    threshold: 0,
+                    parameters: {threshold: 0},
                     nearestneighbors: [9],
-                    allneighbors: [7, 8, 9, 10],
+                    categories: [7, 8, 9, 10],
                     sim: sim,
                     SSA: function (x, y) {
     
@@ -163,9 +163,9 @@ describe("ssa", function() {
 
             var args = {
                     target: 0,
-                    threshold: 0,
+                    parameters: {threshold: 0},
                     nearestneighbors: [7, 9],
-                    allneighbors: [7, 8, 9, 10],
+                    categories: [7, 8, 9, 10],
                     sim: sim,
                     SSA: function (x, y) {
 
