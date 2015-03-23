@@ -4,6 +4,9 @@ var ssa = require('../lib/ssa/ssa'),
 
 describe("ssa", function() {
 
+    var sim = function (x, y) { return Math.abs(x - y); };
+
+
     describe("find k nearest neighbors", function() {
 
         /**
@@ -19,17 +22,66 @@ describe("ssa", function() {
          * Then it will return the 3-top-most numbers
          *
          */
-        it("should work", function() {
+        it("should work", function () {
 
             var k = 3,
-                sim = function(x,y) { return Math.abs(x,y);},
                 target = {name: 0},
-                neighbors = $.range(11).map(function(x){ return {name:x}}),
+                neighbors = $.range(11).map(function (x) {
+                    return {name: x}
+                }),
 
-                actual = $.pluck(ssa._findKNearestNeighbors(k,sim,target,neighbors), 'name');
+                actual = $.pluck(ssa._findKNearestNeighbors(k, sim, target, neighbors), 'name');
 
-            expect(actual).toEqual([10,9,8]);
+            expect(actual).toEqual([10, 9, 8]);
 
+        });
+    });
+
+    describe("SSAp", function() {
+
+        /**
+         * Given
+         * target = 0,
+         * threshold = 0,
+         * nearest neighbors = [9]
+         * sim = euclidian distance
+         * neighbors = [8, 9,10]
+         * and SSA that describes this hierarchy:
+         *   (8)->(9)->(10)
+         *
+         * Then
+         * SSAp(target,8) = SSA(8,9) = 1 / 9 * 9 = 1;
+         * SSAp(target,9) = SSA(9,9) = 1
+         * SSAp(target,10) = SSA(10,9) = 0
+         */
+        it("should work", function() {
+
+            var target = {name: 0},
+                threshold = 0,
+                nearestneighbors = [{name: 9}],
+                neighbors = [{name:8},{name:9},{name:10}],
+                SSA = function(x,y) {
+
+                    var matrix = {
+                            "8->9": 1,
+                            "8->10": 1/2,
+                            "9->10": 1
+                        },
+
+                        index = x.name +"->"+ y.name;
+
+                    if (x.name== y.name) return 1;
+
+                    return matrix[index] ? matrix[index] : 0;
+                },
+
+                actual = ssa.SSAp(target, threshold, nearestneighbors, sim, SSA, neighbors),
+                actualSSA = $.pluck(actual, 'ssa'),
+                actualVals = $.pluck(actual, 'name');
+
+
+            expect(actualSSA).toEqual([1,1,0]);
+            expect(actualVals).toEqual([8,9,10]);
         });
     });
 });
