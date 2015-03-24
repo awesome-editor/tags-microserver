@@ -6,20 +6,24 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+
+//microservice stuff
 var Routes = require('./lib/routes/tag-routes');
 var config = require('./config.json');
 
+var Database = require('./database/neo4j').Database;
+var db = new Database();
 
-var neo4j = require('neo4j');
-var db = new neo4j.GraphDatabase(config.tags.db);
 
-
+//setup service
 var app = express();
+
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-app.use('/tags', new Routes(db).router);
+
+app.use('/tags', new Routes(db));
 
 
 // catch 404 and forward to error handler
@@ -30,6 +34,7 @@ app.use(function(req, res, next) {
 });
 
 
+//TODO fix error handling
 // error handlers
 
 // development error handler
@@ -50,6 +55,6 @@ app.use(function(req, res, next) {
 //   res.send(err.message);
 // });
 
-process.env.PORT = config.tags.port;
+process.env.PORT = config.tags.service.port;
 
 module.exports = app;
