@@ -1,10 +1,14 @@
 {
     "tags": {
-        "host": "localhost",
-        "port": 3001,
-        "db": "localhost",
-        "dbPort": 7474,
-        "dbTransaction": "/db/data/transaction",
-        "dbname": "tags"
+        "service": {
+            "host": "localhost",
+            "port": 3001
+        },
+        "database": {
+            "host": "localhost",
+            "post": 7474,
+            "transaction": "/db/data/transaction",
+            "name": "tags"
+        }
     }
 }
