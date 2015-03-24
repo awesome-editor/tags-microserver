@@ -11,7 +11,7 @@ var bodyParser = require('body-parser');
 var Routes = require('./lib/routes/tag-routes');
 var config = require('./config.json');
 
-var Database = require('./database/neo4j').Database;
+var Database = require('./lib/database/neo4j').Database;
 var db = new Database();
 
 
