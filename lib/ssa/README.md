@@ -136,7 +136,22 @@ Then
 
     }; //returns the suggested parent categories for "0"
 
+# Real-World Example
+I'm currently using the `neo4j` graph database to store tags and tag relationships (the hierarchy structure). It's a really good fit for this problem. 
 
+The downside is that the nodejs driver is an HTTP RESTful call. That means multiple calls to find the SSA will be super slow. 
+
+As a result, I'm taking the following approach:
+
++ fetch all tags (in one HTTP db call)
++ find the nearest neighbors of the target(s) (using `#findKNearestNeighbors`)
++ fetch the SSA of the nearest neighbors and all tags (in one HTTP db call). If you look under the hood, you need only the following SSA values:
+
+      SSA(n,t) for every n that is one of the nearest neighbors
+      and every t that is a tag
+
++ pass the above values to `#SSAp`.
+      
 
 # Credits
 
