@@ -6,27 +6,85 @@ describe("tag list", function() {
 
     describe("preprocess", function() {
 
-        it("should work", function() {
+        var alltags = $.range(9),
+            allnearestneighbors = $.range(4),
+            ssavalues = ['a','b','c'],
 
-            var db = {
+            db = {
                 fetchAllTags: function(callback) {
 
-                    callback(null, $.range(9));
+                    callback(null, alltags);
                 },
 
                 fetchSSA: function(allnearestneighbors, callback) {
 
-                    callback(null, ['a','b']);
+                    console.log('hi ho')
+                    callback(null, ssavalues);
                 }
-            };
+            },
 
-            var ssaEngine = {
+            ssaEngine = {
 
-                findKNearestNeighbors: function(opts, callback) {
+                findKNearestNeighbors: function (opts, callback) {
 
-                    callback(null, $.range(2));
+                    callback(null, allnearestneighbors);
                 }
-            };
+            },
+
+            opts = {
+                parameters: {},
+                ssaEngine: ssaEngine,
+                db: db
+            },
+
+            Preprocess = new Taglist(opts)._Preprocess,
+
+            fetchAllTags = new Preprocess()._fetchAllTags,
+            fetchCombinedNearestNeighbors = new Preprocess()._fetchCombinedNearestNeighbors,
+            fetchSSA = new Preprocess()._fetchSSA;
+
+
+        it("fetchAllTags should return all tags", function() {
+
+            var actual;
+
+            fetchAllTags().apply(function(result) {
+
+                actual = result;
+            });
+
+            expect(actual).toEqual(alltags);
+        });
+
+        it("fetchCombinedNearestNeighbors should return all nearest neighbors", function() {
+
+            var targets = ['a', 'b', 'c'],
+                actual;
+
+            fetchCombinedNearestNeighbors(targets, alltags).apply(function(res) {
+
+                actual = res;
+            });
+
+            expect(actual).toEqual(allnearestneighbors);
+        });
+
+        it("fetchSSA should return ssa values", function() {
+
+            var actual;
+
+            fetchSSA(allnearestneighbors, alltags).apply(function(res) {
+
+                actual = res;
+            });
+
+            expect(actual).toEqual(ssavalues);
+        });
+
+
+       /* it("should work", function() {
+
+
 
             var targets = ['x', 'y'];
 
@@ -49,6 +107,6 @@ describe("tag list", function() {
                  });
 
             //expect(db.fetchAllTags).toHaveBeenCalled();
-        });
+        });*/
     });
 });
