@@ -44,11 +44,11 @@ describe("tag list", function() {
 
             Preprocess = new Taglist(opts)._Preprocess,
 
-            fetchAllTags = new Preprocess()._fetchAllTags,
-            fetchCombinedNearestNeighbors = new Preprocess()._fetchCombinedNearestNeighbors,
-            fetchSSA = new Preprocess()._fetchSSA,
+            fetchAllTags = new Preprocess(targets)._fetchAllTags,
+            fetchCombinedNearestNeighbors = new Preprocess(targets)._fetchCombinedNearestNeighbors,
+            fetchSSA = new Preprocess(targets)._fetchSSA,
 
-            preprocess = new Preprocess().preprocess;
+            preprocess = new Preprocess(targets).preprocess;
 
 
         it("fetchAllTags should return all tags", function() {
