@@ -44,11 +44,11 @@ describe("tag list", function() {
 
             Preprocess = new Taglist(opts)._Preprocess,
 
-            fetchAllTags = new Preprocess(targets)._fetchAllTags,
-            fetchCombinedNearestNeighbors = new Preprocess(targets)._fetchCombinedNearestNeighbors,
-            fetchSSA = new Preprocess(targets)._fetchSSA,
+            fetchAllTags = new Preprocess()._fetchAllTags,
+            fetchCombinedNearestNeighbors = new Preprocess()._fetchCombinedNearestNeighbors,
+            fetchSSA = new Preprocess()._fetchSSA,
 
-            preprocess = new Preprocess(targets).preprocess;
+            preprocess = new Preprocess().preprocess;
 
 
         it("fetchAllTags should return all tags", function() {
@@ -92,10 +92,10 @@ describe("tag list", function() {
 
            var actual;
 
-           preprocess().apply(function(result) {
+           preprocess(targets).apply(function(result) {
 
                actual = result;
-           })
+           });
 
            expect(actual).toEqual(ssavalues);
         });
