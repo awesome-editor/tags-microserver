@@ -6,8 +6,14 @@ describe("tag list", function() {
 
     describe("preprocess", function() {
 
-        var alltags = $.range(9),
-            allnearestneighbors = $.range(4),
+        var targets = ['a', 'b', 'c'],
+            alltags = $.range(9),
+            allnearestneighborsmap = {
+                a: [1,2],
+                b: [3,4],
+                c: [4,5,6]
+            },
+            allnearestneighbors = [1,2,3,4,5,6],
             ssavalues = ['a','b','c'],
 
             db = {
@@ -18,7 +24,6 @@ describe("tag list", function() {
 
                 fetchSSA: function(allnearestneighbors, callback) {
 
-                    console.log('hi ho')
                     callback(null, ssavalues);
                 }
             },
@@ -27,7 +32,7 @@ describe("tag list", function() {
 
                 findKNearestNeighbors: function (opts, callback) {
 
-                    callback(null, allnearestneighbors);
+                    callback(null, allnearestneighborsmap[opts.target]);
                 }
             },
 
@@ -41,7 +46,9 @@ describe("tag list", function() {
 
             fetchAllTags = new Preprocess()._fetchAllTags,
             fetchCombinedNearestNeighbors = new Preprocess()._fetchCombinedNearestNeighbors,
-            fetchSSA = new Preprocess()._fetchSSA;
+            fetchSSA = new Preprocess()._fetchSSA,
+
+            preprocess = new Preprocess().preprocess;
 
 
         it("fetchAllTags should return all tags", function() {
@@ -58,8 +65,7 @@ describe("tag list", function() {
 
         it("fetchCombinedNearestNeighbors should return all nearest neighbors", function() {
 
-            var targets = ['a', 'b', 'c'],
-                actual;
+            var actual;
 
             fetchCombinedNearestNeighbors(targets, alltags).apply(function(res) {
 
@@ -82,31 +88,16 @@ describe("tag list", function() {
         });
 
 
-       /* it("should work", function() {
+       it("should work", function() {
 
+           var actual;
 
+           preprocess().apply(function(result) {
 
-            var targets = ['x', 'y'];
+               actual = result;
+           })
 
-            var opts = {
-                parameters: {},
-                ssaEngine: ssaEngine,
-                db: db
-            };
-
-            var taglist = new Taglist(opts) ;
-
-            //spyOn(db, 'fetchAllTags');
-
-            taglist
-                ._preprocess(targets)
-                 .apply(function(res) {
-
-                     console.log('Hell\'s yea!');
-                     expect(res).toEqual(['a', 'b']);
-                 });
-
-            //expect(db.fetchAllTags).toHaveBeenCalled();
-        });*/
+           expect(actual).toEqual(ssavalues);
+        });
     });
 });
