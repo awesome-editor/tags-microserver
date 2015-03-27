@@ -1,29 +1,55 @@
-//express stuff
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+    //express stuff
+var express = require('express'),
+    path = require('path'),
+    favicon = require('serve-favicon'),
+    logger = require('morgan'),
+    cookieParser = require('cookie-parser'),
+    bodyParser = require('body-parser'),
+
+    app = express(),
 
 
-//microservice stuff
-var Routes = require('./lib/routes/tag-routes');
-var config = require('./config.json');
+    //microservice stuff
+    config = require('./config.json'),
 
-var Database = require('./lib/database/neo4j').Database;
-var db = new Database();
+    http = require('http'),
+    $ = require('underscore'),
+    _ = require('highland'),
+    uuid = require('uuid'),
+
+    Deps = function() {
+
+        this.Post = require('./lib/database/post');
+        this.post = new this.Post(config.tags.database, http);
+
+        this.Db = require('./lib/database/neo4j');
+        this.db = new this.Db(_, uuid, this.post);
 
 
+        this.validators = require('./lib/routes/validators');
+        this.Tagroutes = require('./lib/routes/tag-routes');
+        this.tagroutes = new this.Tagroutes(this.db, _, express, this.validators);
+
+
+        this.SsaRecommendationEngine = require('./lib/ssa/ssa');
+        this.ssaRecommendationEngine = new this.SsaRecommendationEngine($);
+
+
+        this.Taglist = require('./lib/tag-list/tag-list');
+        this.taglist = new this.Taglist(_);
+    },
+    
+    deps = new Deps();
+
+
+    // };
+
+    
 //setup service
-var app = express();
-
-
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-
-app.use('/tags', new Routes(db));
+app.use('/tags', deps.tagroutes);
 
 
 // catch 404 and forward to error handler
