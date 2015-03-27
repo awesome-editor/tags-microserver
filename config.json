@@ -6,7 +6,7 @@
         },
         "database": {
             "host": "localhost",
-            "post": 7474,
+            "port": 7474,
             "transaction": "/db/data/transaction",
             "name": "tags"
         }
