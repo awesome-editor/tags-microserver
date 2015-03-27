@@ -38,13 +38,10 @@ var express = require('express'),
         this.Taglist = require('./lib/tag-list/tag-list');
         this.taglist = new this.Taglist(_);
     },
-    
+
     deps = new Deps();
 
 
-    // };
-
-    
 //setup service
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
