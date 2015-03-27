@@ -27,16 +27,21 @@ var express = require('express'),
 
 
         this.validators = require('./lib/routes/validators');
+
         this.Tagroutes = require('./lib/routes/tag-routes');
         this.tagroutes = new this.Tagroutes(this.db, _, express, this.validators);
 
+        this.Adminroutes = require('./lib/routes/admin-routes');
+        this.adminroutes = new this.Adminroutes(this.db, express);
 
         this.SsaRecommendationEngine = require('./lib/ssa/ssa');
         this.ssaRecommendationEngine = new this.SsaRecommendationEngine($);
 
 
         this.Taglist = require('./lib/tag-list/tag-list');
-        this.taglist = new this.Taglist(_);
+        this.taglist = new this.Taglist(
+            _, this.db, this.ssaRecommendationEngine, null, {k: 3, sim: {}}
+        );
     },
 
     deps = new Deps();
@@ -47,7 +52,7 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 app.use('/tags', deps.tagroutes);
-
+app.use('/admin/', deps.adminroutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
