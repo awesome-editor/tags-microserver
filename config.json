@@ -7,7 +7,7 @@
         "database": {
             "host": "localhost",
             "port": 7474,
-            "transaction": "/db/data/transaction",
+            "transaction": "/db/data/transaction/commit",
             "name": "tags"
         }
     }
