@@ -19,11 +19,13 @@ var express = require('express'),
 
     Deps = function() {
 
+        this.c = require('./lib/common/common');
+
         this.Post = require('./lib/database/post');
         this.post = new this.Post(config.tags.database, http);
 
         this.Db = require('./lib/database/neo4j');
-        this.db = new this.Db(_, uuid, this.post);
+        this.db = new this.Db(this.c, _, uuid, this.post);
 
 
         this.validators = require('./lib/routes/validators');
