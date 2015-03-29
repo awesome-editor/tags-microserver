@@ -36,7 +36,7 @@ var express = require('express'),
         this.Adminroutes = require('./lib/routes/admin-routes');
         this.adminroutes = new this.Adminroutes(this.db, express);
 
-        this.SsaRecommendationEngine = require('./lib/ssa/ssa');
+        this.SsaRecommendationEngine = require('./lib/ssa/ssa-engine');
         this.ssaRecommendationEngine = new this.SsaRecommendationEngine($);
 
 

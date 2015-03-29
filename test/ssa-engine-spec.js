@@ -1,10 +1,12 @@
-var ssa = require('../lib/ssa/ssa'),
-    $ = require('underscore');
+var SSA = require('../lib/ssa/ssa-engine'),
+    _ = require('underscore');
 
 
-describe("ssa", function() {
+describe("ssa recommendation engine", function() {
 
-    var sim = function (x, y) { return Math.abs(x - y); };
+    var sim = function (x, y) { return Math.abs(x - y);},
+
+        ssa = new SSA(_);
 
 
     describe("find k nearest neighbors", function() {
@@ -28,7 +30,7 @@ describe("ssa", function() {
                     k: 3,
                     sim: sim,
                     target: 0,
-                    categories: $.range(11)
+                    categories: _.range(11)
                 },
 
                 actual = ssa.findKNearestNeighbors(args);
@@ -73,15 +75,15 @@ describe("ssa", function() {
 
                             index = x + "->" + y;
 
-                        if (x == y) return 1;
+                        if (x === y) return 1;
 
                         return matrix[index] ? matrix[index] : 0;
                     }
                 },
 
                 actual = ssa.SSAp(args),
-                actualSSA = $.pluck(actual, 'ssa'),
-                actualVals = $.pluck(actual, 'value');
+                actualSSA = _.pluck(actual, 'ssa'),
+                actualVals = _.pluck(actual, 'value');
 
 
             expect(actualSSA).toEqual([1,1,0]);
@@ -125,15 +127,15 @@ describe("ssa", function() {
     
                             index = x + "->" + y;
     
-                        if (x == y) return 1;
+                        if (x === y) return 1;
     
                         return matrix[index] ? matrix[index] : 0;
                     }
                 },
 
                 actual = ssa.SSAp(args),
-                actualSSA = $.pluck(actual, 'ssa'),
-                actualVals = $.pluck(actual, 'value');
+                actualSSA = _.pluck(actual, 'ssa'),
+                actualVals = _.pluck(actual, 'value');
 
 
             expect(actualSSA).toEqual([0,1,1,0]);
@@ -178,15 +180,15 @@ describe("ssa", function() {
 
                             index = x + "->" + y;
 
-                        if (x == y) return 1;
+                        if (x === y) return 1;
 
                         return matrix[index] ? matrix[index] : 0;
                     }
                 },
 
                 actual = ssa.SSAp(args),
-                actualSSA = $.pluck(actual, 'ssa'),
-                actualVals = $.pluck(actual, 'value');
+                actualSSA = _.pluck(actual, 'ssa'),
+                actualVals = _.pluck(actual, 'value');
 
 
             expect(actualSSA).toEqual([7/16,9/16,9/16,0]);
