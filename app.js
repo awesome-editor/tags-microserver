@@ -13,7 +13,7 @@ var express = require('express'),
     config = require('./config.json'),
 
     http = require('http'),
-    $ = require('underscore'),
+    u = require('underscore'),
     _ = require('highland'),
     uuid = require('uuid'),
 
@@ -36,13 +36,13 @@ var express = require('express'),
         this.Adminroutes = require('./lib/routes/admin-routes');
         this.adminroutes = new this.Adminroutes(this.db, express);
 
-        this.SsaRecommendationEngine = require('./lib/ssa/ssa-engine');
-        this.ssaRecommendationEngine = new this.SsaRecommendationEngine($);
+        this.SSAEngine = require('./lib/ssa/ssa-engine');
+        this.ssaEngine = new this.SSAEngine(u);
 
 
         this.Taglist = require('./lib/tag-list/tag-list');
         this.taglist = new this.Taglist(
-            _, this.db, this.ssaRecommendationEngine, null, {k: 3, sim: {}}
+            _, this.db, this.ssaEngine, null, {k: 3, sim: {}}
         );
     },
 
