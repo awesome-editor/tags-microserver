@@ -32,7 +32,7 @@ describe("neo4j", function () {
                 return {
                     root: root,
                     newPath: newPath
-                }
+                };
             },
 
             globalRoot = {uuid: 0, name: '__root__'},
@@ -71,7 +71,7 @@ describe("neo4j", function () {
                     v4: function () {
                         return id++;
                     }
-                }
+                };
             })();
 
             db = new Database(c, _, uuid, httpPost);
@@ -153,7 +153,7 @@ describe("neo4j", function () {
                 withId = {name: 'foo', uuid: uuid};
 
             expect(db._addId(withId).uuid).toEqual(uuid);
-        })
+        });
     });
 
 
@@ -202,7 +202,7 @@ describe("neo4j", function () {
         it("should report errors", function() {
 
             var errors = ['error'],
-                actual
+                actual;
 
             httpPost.post = function (data, callback) {
 
@@ -216,7 +216,7 @@ describe("neo4j", function () {
 
                     actual = err;
                 })
-                .apply(function (res) {})
+                .apply(function (res) {});
 
             expect(actual).toEqual(errors);
         });
