@@ -75,30 +75,7 @@ describe("neo4j", function () {
             })();
 
             db = new Database(c, _, uuid, httpPost);
-
-            spyOn(httpPost, 'post');
-            //spyOn(format, 'format');
         });
-
-
-        /*it("should call post", function() {
-
-            db.createPath(anyFilePath)
-                .apply(function(res) {
-
-                    expect(httpPost.post).toHaveBeenCalled()
-                });
-        });*/
-
-
-       /* it("should call format", function() {
-
-            db.createPath(args([anyFilePath[0]]))
-                .apply(function(res) {
-
-                    expect(format.format).toHaveBeenCalled();
-                });
-        });*/
 
 
         it("should create correct query for single tag", function() {
@@ -145,6 +122,7 @@ describe("neo4j", function () {
         });
     });
 
+
     describe("_add id", function() {
 
         var createdUuid = 1;
@@ -176,5 +154,71 @@ describe("neo4j", function () {
 
             expect(db._addId(withId).uuid).toEqual(uuid);
         })
+    });
+
+
+    describe("_post", function() {
+
+        beforeEach(function() {
+
+            uuid = null;
+
+            db = new Database(c, _, uuid, httpPost);
+        });
+
+
+        it("should post the data", function() {
+
+            var data = 'hi',
+                expected = {statements: data},
+                actual;
+
+            db._post(data).apply(function(res) {
+                actual = res;
+            });
+
+            expect(actual).toEqual(expected);
+        });
+    });
+
+
+    describe("_db", function() {
+
+        var data = 'hi',
+            expected = {statements: data};
+
+
+        it("should post the data", function() {
+
+            var actual;
+
+            db._db(_([data])).apply(function(res) {
+                actual = res;
+            });
+
+            expect(actual).toEqual(expected);
+        });
+
+        it("should report errors", function() {
+
+            var errors = ['error'],
+                actual
+
+            httpPost.post = function (data, callback) {
+
+                callback(null, {errors: errors});
+            };
+
+            db = new Database(c, _, null, httpPost);
+
+            db._db(_([data]))
+                .stopOnError(function(err) {
+
+                    actual = err;
+                })
+                .apply(function (res) {})
+
+            expect(actual).toEqual(errors);
+        });
     });
 });
