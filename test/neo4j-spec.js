@@ -1,38 +1,59 @@
-var Database = require('../lib/database/neo4j')._Database,
+var c = require('../lib/common/common'),
+    Database = require('../lib/database/neo4j'),
     _ = require('highland');
 
 
 describe("neo4j", function () {
 
-    describe("createPath", function() {
+    var str = function(obj) {
 
-        var post,
-            format,
-            db,
+            return JSON.stringify(obj, null, '\t');
+        },
 
-
-            root = {id: 0},
-            anyFilePath = [
-                {id: 1, name: 'a'},
-                {id: 2, name: 'b'}
-            ],
+        httpPost,
+        db,
+        uuid;
 
 
-            args = function(filePath, root) {
+    beforeEach(function() {
 
+        httpPost = {
+            post: function (data, callback) {
+
+                callback(null, data);
+            }
+        };
+    });
+
+
+    describe("create path query", function() {
+
+        var args = function(newPath, root) {
                 return {
-                    root: root, 
-                    newPath: filePath
-                };
+                    root: root,
+                    newPath: newPath
+                }
             },
+
+            globalRoot = {uuid: 0, name: '__root__'},
+            anySingleFilePath = [{name: 'a'}],
+            anyFilePath = [
+                {name: 'a'},
+                {name: 'b'}
+            ],
+            anyFilePathWithRoot = args(
+                [{name:'child'}],
+                {uuid: 1, name: 'top'}
+            ),
+
 
             expectedQuery = function(parent, child) {
 
                 return {
                     statement: "MERGE " +
-                        "(c:Tag{id:{child}.id, name:{child}.name})" +
+                        "(c:Tag{uuid:{child}.uuid, name:{child}.name})" +
                         "-[r:IN]->" +
-                        "(p:Tag{id:{parent}.id, name:{parent}.name}) "+
+                        "(p:Tag{uuid:{parent}.uuid, name:{parent}.name}) "+
                         "RETURN c,p",
                     parameters: {
                         child: child,
@@ -44,62 +65,47 @@ describe("neo4j", function () {
 
         beforeEach(function() {
 
-            post = {
-                post: function(data, callback) {
-
-                    callback(null, data);
+            uuid = (function() {
+                var id=1;
+                return {
+                    v4: function () {
+                        return id++;
+                    }
                 }
-            };
+            })();
 
-            format = {
-                format: function(data) {
+            db = new Database(c, _, uuid, httpPost);
 
-                    return _([data])
-                        .map(function(res) {
-
-                            return res;
-                        });
-                }
-            };
-
-            var Neo4j = new Database(post, format);
-
-            db = new Neo4j();
-
-            spyOn(post, 'post');
-            spyOn(format, 'format');
+            spyOn(httpPost, 'post');
+            //spyOn(format, 'format');
         });
 
 
-        it("should call post", function() {
+        /*it("should call post", function() {
 
-            db.createPath(args([anyFilePath[0]]))
+            db.createPath(anyFilePath)
                 .apply(function(res) {
 
-                    expect(post.post).toHaveBeenCalled();
+                    expect(httpPost.post).toHaveBeenCalled()
                 });
-        });
+        });*/
 
 
-        it("should call format", function() {
+       /* it("should call format", function() {
 
             db.createPath(args([anyFilePath[0]]))
                 .apply(function(res) {
 
                     expect(format.format).toHaveBeenCalled();
                 });
-        });
+        });*/
 
 
-        it("should create correct query for single node", function() {
+        it("should create correct query for single tag", function() {
 
-            var expected = { statements: [
-                    expectedQuery(root, anyFilePath[0]),
-                ]
-            };
+            var expected = [expectedQuery(globalRoot, anySingleFilePath[0])];
 
-
-            db.createPath(args([anyFilePath[0]]))
+            db._createPathQuery(args(anySingleFilePath))
                 .apply(function(res) {
 
                     expect(res).toEqual(expected);
@@ -107,37 +113,68 @@ describe("neo4j", function () {
         });
 
 
-        it("should create correct query for filepath", function() {
+        it("should create correct query for two or more tags", function() {
 
-            var expected = { statements: [
-                    expectedQuery(root, anyFilePath[0]),
-                    expectedQuery(anyFilePath[0], anyFilePath[1])
-                ]
-            };
+            var expected = [
+                expectedQuery(globalRoot, anyFilePath[0]),
+                expectedQuery(anyFilePath[0], anyFilePath[1])
+            ];
 
-
-            db.createPath(args(anyFilePath))
+            db._createPathQuery(args(anyFilePath))
                 .apply(function(res) {
 
-                    expect(res).toEqual(expected);
+                    expect(str(res)).toEqual(str(expected));
                 });
         });
 
 
-        it("should create correct query for filepath with root", function() {
+        it("should create correct query for tag with root", function() {
 
-            var expected = { statements: [
-                    expectedQuery(root, anyFilePath[0]),
-                    expectedQuery(anyFilePath[0], anyFilePath[1])
-                ]
-            };
+            var expected = [
+                expectedQuery(
+                    anyFilePathWithRoot.root,
+                    anyFilePathWithRoot.newPath[0]
+                )
+            ];
 
-
-            db.createPath(args(anyFilePath, root))
+            db._createPathQuery(anyFilePathWithRoot)
                 .apply(function(res) {
 
-                    expect(res).toEqual(expected);
+                    expect(str(res)).toEqual(str(expected));
                 });
         });
+    });
+
+    describe("_add id", function() {
+
+        var createdUuid = 1;
+
+
+        beforeEach(function() {
+
+            uuid = {
+                v4: function () {
+                    return createdUuid;
+                }
+            };
+
+            db = new Database(c, _, uuid, httpPost);
+        });
+
+
+        it("should add uuid if tag doesn't have one", function() {
+
+            var withoutId = {name: 'foo'};
+
+            expect(db._addId(withoutId).uuid).toEqual(createdUuid);
+        });
+
+        it("should not add uuid if tag already has one", function() {
+
+            var uuid = 25,
+                withId = {name: 'foo', uuid: uuid};
+
+            expect(db._addId(withId).uuid).toEqual(uuid);
+        })
     });
 });
