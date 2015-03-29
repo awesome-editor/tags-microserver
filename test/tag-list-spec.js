@@ -1,13 +1,17 @@
 var Taglist = require('../lib/tag-list/tag-list'),
-    $ = require('underscore');
+    u = require('underscore'),
+    _ = require('highland');
 
 
 describe("tag list", function() {
 
     describe("preprocess", function() {
 
-        var targets = ['a', 'b', 'c'],
-            alltags = $.range(9),
+        var Preprocess = require('../lib/tag-list/support/tag-preprocess'),
+
+
+            targets = ['a', 'b', 'c'],
+            alltags = u.range(9),
             allnearestneighborsmap = {
                 a: [1,2],
                 b: [3,4],
@@ -16,11 +20,12 @@ describe("tag list", function() {
             allnearestneighbors = [1,2,3,4,5,6],
             ssavalues = ['a','b','c'],
 
+
             db = {
-                fetchAllTags: function(callback) {
+                fetchAllTags: _.wrapCallback(function(callback) {
 
                     callback(null, alltags);
-                },
+                }),
 
                 fetchSSA: function(allnearestneighbors, callback) {
 
@@ -37,18 +42,15 @@ describe("tag list", function() {
             },
 
             opts = {
-                parameters: {},
-                ssaEngine: ssaEngine,
-                db: db
+                parameters: {}
             },
 
-            Preprocess = new Taglist(opts)._Preprocess,
+            preprocess = new Preprocess(_, db, ssaEngine, opts),
 
-            fetchAllTags = new Preprocess()._fetchAllTags,
-            fetchCombinedNearestNeighbors = new Preprocess()._fetchCombinedNearestNeighbors,
-            fetchSSA = new Preprocess()._fetchSSA,
+            fetchAllTags =  preprocess._fetchAllTags,
+            fetchCombinedNearestNeighbors = preprocess._fetchCombinedNearestNeighbors,
+            fetchSSA = preprocess._fetchSSA;
 
-            preprocess = new Preprocess().preprocess;
 
 
         it("fetchAllTags should return all tags", function() {
@@ -92,7 +94,7 @@ describe("tag list", function() {
 
            var actual;
 
-           preprocess(targets).apply(function(result) {
+           preprocess.preprocess(targets).apply(function(result) {
 
                actual = result;
            });
