@@ -81,7 +81,7 @@ describe("neo4j-common", function () {
 
                     actual = err;
                 })
-                .apply(function (res) {})
+                .apply(function (res) {});
 
             expect(actual).toEqual(errors);
         });

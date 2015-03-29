@@ -155,4 +155,49 @@ describe("neo4j", function () {
             expect(db._addId(withId).uuid).toEqual(uuid);
         });
     });
+
+    describe("commons", function() {
+
+        beforeEach(function() {
+
+            db = new Database(c, _, null, httpPost);
+        });
+
+        it("db should be hooked up correctly", function() {
+
+            var data = 'hi',
+                expected = {statements: data},
+
+                actual;
+
+            db._db(_([data])).apply(function(res) {
+                actual = res;
+            });
+
+            expect(actual).toEqual(expected);
+        });
+    });
+
+    describe("integration", function() {
+
+        it("should be hooked up to work with commons correctly", function() {
+
+            var expected = {statements: 'hi'},
+
+                actual;
+
+            httpPost.post = function (data, callback) {
+
+                callback(null, expected);
+            };
+
+            db = new Database(c, _, null, httpPost);
+
+            db.fetchAllTags().apply(function(res) {
+                actual = res;
+            });
+
+            expect(actual).toEqual(expected);
+        });
+    });
 });
