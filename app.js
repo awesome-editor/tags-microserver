@@ -42,6 +42,11 @@ function Deps() {
         express: express
     });
 
+    this.tagRoutes = require('./lib/routes/tag-routes').bindRoutes({
+        db: this.db,
+        express: express
+    });
+
 /*    this.tagroutes = require('./lib/routes/tag-routes').bindRoutes({
         db: this.db,
         _: h,
@@ -70,7 +75,7 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 app.use('/docs', deps.docsRoutes);
-//app.use('/tags', deps.tagroutes);
+app.use('/tags', deps.tagRoutes);
 //app.use('/admin/', deps.adminroutes);
 
 // catch 404 and forward to error handler
