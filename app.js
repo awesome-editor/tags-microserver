@@ -13,9 +13,11 @@ var express = require('express'),
     config = require('./config.json'),
 
     http = require('http'),
-    _ = require('underscore'),
+    _ = require('lodash'),
     h = require('highland'),
-    uuid = require('uuid');
+    uuid = require('uuid'),
+
+    textRank = require('text-rank');
 
 function Deps() {
 
@@ -24,7 +26,14 @@ function Deps() {
     this.Post = require('./lib/database/post');
     this.post = new this.Post(config.tags.database, http);
 
-    this.db = require('./lib/database/neo4j').bindNeo4j(this.c, _, h, uuid, this.post);
+    this.db = require('./lib/database/neo4j').bindNeo4j({
+      c: this.c,
+      _: _,
+      h: h,
+      uuid: uuid,
+      post: this.post,
+      textRank: textRank
+    });
 
     this.validators = require('./lib/routes/validators');
 
