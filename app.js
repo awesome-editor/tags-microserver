@@ -31,7 +31,7 @@ function Deps() {
       _: _,
       h: h,
       uuid: uuid,
-      post: this.post,
+      httpPost: this.post,
       textRank: textRank
     });
 
