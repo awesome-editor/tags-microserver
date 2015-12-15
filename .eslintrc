@@ -1,0 +1,76 @@
+{
+  "ecmaFeatures": {
+    "arrowFunctions": true,
+    "blockBindings": true,
+    "classes": true,
+    "defaultParams": true,
+    "forOf": true,
+    "modules": false,
+    "templateStrings": true,
+    "destructuring": true
+  },
+
+  "extends": "eslint:recommended",
+
+  "rules": {
+    "no-comma-dangle": "always",
+    "no-cond-assign": "always",
+    "no-constant-condition": "always",
+    "no-control-regex": "always",
+    "no-empty": "always",
+    "no-empty-class": "always",
+    "no-ex-assign": "always",
+    "no-extra-parens": "always",
+    "no-extra-semi": "always",
+    "no-func-assign": "always",
+    "no-inner-declarations": "always",
+    "no-invalid-regexp": "always",
+    "no-reserved-keys": "always",
+    "no-unreachable": "always",
+    "valid-jsdoc": "always",
+    "no-loop-func": "always",
+    "no-irregular-whitespace": "always",
+    "no-trailing-spaces": [2, { "skipBlankLines": true }],
+    "no-underscore-dangle": "never",
+    "no-alert": "never",
+    "no-shadow": "never",
+
+    /** old jshint **/
+    "no-bitwise": true,
+    "no-console": 2,
+    "no-debugger": "always",
+    "camelcase": "never",
+    "curly": "always",
+    "eqequq": "always",
+    "wrap-iife": "always",
+    "indent": [2, 2], /** 2 space indention. Don't ask **/
+    "no-undefined": "always",
+    "no-use-before-define": "always",
+    "new-cap": "always",
+    "no-caller": "always",
+    "quotes": [2, "single"],
+    "strict": "global",
+    "max-len": "128",
+    "no-multi-spaces": [2, { "exceptions": { "VariableDeclarator": true } }]
+  },
+
+
+  "env": {
+    "browser": true,
+    "jasmine": true,
+    "mocha": true
+  },
+
+  "globals": {
+    "_" : true,
+    "define": true,
+    "require" : true,
+    "exports": true,
+    "module": true,
+    "__dirname": true,
+    "appRoot": true,
+    "libRoot": true,
+    "process": true,
+    "global": true
+  }
+}
