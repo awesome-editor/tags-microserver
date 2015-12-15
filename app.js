@@ -1,81 +1,19 @@
-//express stuff
-var express = require('express'),
-    path = require('path'),
-    favicon = require('serve-favicon'),
-    logger = require('morgan'),
-    cookieParser = require('cookie-parser'),
-    bodyParser = require('body-parser'),
+const bindServiceFactory = require('./lib/service.factory.js').bindServiceLocator;
+const deps = bindServiceFactory(require('./lib/service.locator.js'), __dirname);
 
-    app = express(),
-
-
-//microservice stuff
-    config = require('./config.json'),
-
-    http = require('http'),
-    _ = require('lodash'),
-    h = require('highland'),
-    uuid = require('uuid'),
-
-    textRank = require('text-rank');
-
-function Deps() {
-
-    this.c = require('./lib/common/common');
-
-    this.Post = require('./lib/database/post');
-    this.post = new this.Post(config.tags.database, http);
-
-    this.db = require('./lib/database/neo4j').bindNeo4j({
-      c: this.c,
-      _: _,
-      h: h,
-      uuid: uuid,
-      httpPost: this.post,
-      textRank: textRank
-    });
-
-    this.validators = require('./lib/routes/validators');
-
-    this.docsRoutes = require('./lib/routes/docs-routes').bindRoutes({
-        db: this.db,
-        express: express
-    });
-
-    this.tagRoutes = require('./lib/routes/tag-routes').bindRoutes({
-        db: this.db,
-        express: express
-    });
-
-/*    this.tagroutes = require('./lib/routes/tag-routes').bindRoutes({
-        db: this.db,
-        _: h,
-        express: express,
-        validators: this.validators
-    });*/
-
-    //this.Adminroutes = require('./lib/routes/admin-routes');
-    //this.adminroutes = new this.Adminroutes(this.db, express);
-
-    this.SSAEngine = require('./lib/ssa/ssa-engine');
-    this.ssaEngine = new this.SSAEngine(_);
-
-
-    this.Taglist = require('./lib/tag-list/tag-list');
-    this.taglist = new this.Taglist(
-        h, this.db, this.ssaEngine, null, {k: 3, sim: {}}
-    );
-}
-
-var deps = new Deps();
+const app = deps.app;
+const bodyParser = deps.bodyParser;
+const docRoutes = deps.docRoutes;
+const tagRoutes = deps.tagRoutes;
+const config = deps.config;
 
 
 //setup service
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-app.use('/docs', deps.docsRoutes);
-app.use('/tags', deps.tagRoutes);
+app.use('/docs', docRoutes);
+app.use('/tags', tagRoutes);
 //app.use('/admin/', deps.adminroutes);
 
 // catch 404 and forward to error handler
